@@ -6,15 +6,22 @@ use volatile::Volatile;
 #[repr(u8)]
 
 pub enum Colour {
-	Red = 0,
-	Green = 1,
-	BLue = 2,
-	Black = 3,
-	White = 4,
-	Magenta = 5,
+	Black = 0,
+    Blue = 1,
+    Green = 2,
+    Cyan = 3,
+    Red = 4,
+    Magenta = 5,
     Brown = 6,
     LightGray = 7,
     DarkGray = 8,
+    LightBlue = 9,
+    LightGreen = 10,
+    LightCyan = 11,
+    LightRed = 12,
+    Pink = 13,
+    Yellow = 14,
+    White = 15,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -83,9 +90,28 @@ impl ScreenWriter {
 			}
 		}
 	}
+	
 	fn new_line(&mut self) {
-		/* Work In Prog*/
+		for row in 1..BUFFER_HEIGHT {
+			for col in 0..BUFFER_WIDTH {
+				let character = self.buffer.chars[row][col].read();
+				self.buffer.chars[row - 1][col].write(character);
+			}
+		}
+		self.clear_row(BUFFER_HEIGHT - 1);
+		self.column_pos = 0;
 	}
+
+	fn clear_row(&mut self, row: usize) {
+		let blank = ScreenCharacter {
+			ascii_char: b' ',
+			colour_code: self.colour_code,
+		};
+		for col in 0..BUFFER_WIDTH {
+			self.buffer.chars[row][col].write(blank);
+		}
+	}
+
 }
 
 impl Write for ScreenWriter {
@@ -107,6 +133,6 @@ pub fn print_on_Display() {
 	screenWriter.write_byte(b'G');
 	screenWriter.write_string("ood Day Everyone ");
 	screenWriter.write_string("I am BareMetal-OS");
-	write!(screenWriter, "The numbers are {} and {}", 42 ,1.0 / 3.0).unwrap();
+	write!(screenWriter, " The numbers are {} and {}", 42 ,1.0 / 3.0).unwrap();
 }
 
