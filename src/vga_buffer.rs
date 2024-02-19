@@ -1,5 +1,7 @@
 use core::fmt::{Write, Result};
 use volatile::Volatile;
+use lazy_static::lazy_static;
+use spin::Mutex;
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -60,6 +62,15 @@ pub struct ScreenWriter {
 }
 
 
+lazy_static! {
+	pub static ref SCREENWRITER: Mutex<ScreenWriter> = Mutex::new(ScreenWriter {
+		column_pos:0,
+		colour_code:ColourCode::new(Colour::Yellow, Colour::Black),
+		buffer: unsafe {&mut *(0xb8000 as *mut Buffer)},
+	});
+}
+ 
+
 impl ScreenWriter {
 	pub fn write_byte(&mut self, byte: u8) {
 		match byte {
@@ -82,7 +93,7 @@ impl ScreenWriter {
 		}
 	}
 
-	fn write_string(&mut self, s: &str) {
+	pub fn write_string(&mut self, s: &str) {
 		for byte in s.bytes() {
 			match byte {
 				0x20..=0x7e | b'\n' => self.write_byte(byte),
@@ -91,7 +102,7 @@ impl ScreenWriter {
 		}
 	}
 	
-	fn new_line(&mut self) {
+	pub fn new_line(&mut self) {
 		for row in 1..BUFFER_HEIGHT {
 			for col in 0..BUFFER_WIDTH {
 				let character = self.buffer.chars[row][col].read();
@@ -102,7 +113,7 @@ impl ScreenWriter {
 		self.column_pos = 0;
 	}
 
-	fn clear_row(&mut self, row: usize) {
+	pub fn clear_row(&mut self, row: usize) {
 		let blank = ScreenCharacter {
 			ascii_char: b' ',
 			colour_code: self.colour_code,
@@ -121,18 +132,17 @@ impl Write for ScreenWriter {
 	}
 }
 
-pub fn print_on_Display() {
-	let mut screenWriter = ScreenWriter {
-		column_pos: 0,
-		colour_code: ColourCode::new(Colour::Red, Colour::Green),
-		buffer: unsafe {
-			&mut *(0xb8000 as *mut Buffer)
-		},
-	};
+// pub fn print_on_Display() {
+// 	let mut screenWriter = ScreenWriter {
+// 		column_pos: 0,
+// 		colour_code: ColourCode::new(Colour::Yellow, Colour::Black),
+// 		buffer: unsafe {
+// 			&mut *(0xb8000 as *mut Buffer)
+// 		},
+// 	};
 
-	screenWriter.write_byte(b'G');
-	screenWriter.write_string("ood Day Everyone ");
-	screenWriter.write_string("I am BareMetal-OS");
-	write!(screenWriter, " The numbers are {} and {}", 42 ,1.0 / 3.0).unwrap();
-}
+// 	screenWriter.write_byte(b'H');
+// 	screenWriter.write_string("ello I am Jarvis XD ");
+// 	write!(screenWriter, " Created with love Shreesh, Samarth & Satvik").unwrap();
+// }
 

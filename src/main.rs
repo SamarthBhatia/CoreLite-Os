@@ -26,7 +26,9 @@ fn panic(_info: &PanicInfo) -> ! {
 // }
 
 pub extern "C" fn _start() -> ! {
-    vga_buffer::print_on_Display();
-
+    // vga_buffer::print_on_Display();
+    use core::fmt::Write;
+     vga_buffer::SCREENWRITER.lock().write_str("Hello again").unwrap();
+    write!(vga_buffer::SCREENWRITER.lock(), ", some numbers: {} {}", 42, 1.337).unwrap();
     loop {}
 }
