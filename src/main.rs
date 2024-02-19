@@ -7,6 +7,7 @@ mod vga_buffer;
 #[panic_handler]
 
 fn panic(_info: &PanicInfo) -> ! {
+    println!("{}", _info);
     loop {}
 }
 
@@ -27,8 +28,10 @@ fn panic(_info: &PanicInfo) -> ! {
 
 pub extern "C" fn _start() -> ! {
     // vga_buffer::print_on_Display();
-    use core::fmt::Write;
-     vga_buffer::SCREENWRITER.lock().write_str("Hello again").unwrap();
-    write!(vga_buffer::SCREENWRITER.lock(), ", some numbers: {} {}", 42, 1.337).unwrap();
+    // use core::fmt::Write;
+    // vga_buffer::SCREENWRITER.lock().write_str("Hello again").unwrap();
+    // write!(vga_buffer::SCREENWRITER.lock(), ", some numbers: {} {}", 42, 1.337).unwrap();
+    println!("Hello ,Guys{}", "!");
+    panic!("Some garbage we don't understand :)");
     loop {}
 }
