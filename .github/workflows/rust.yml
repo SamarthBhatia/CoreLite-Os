@@ -16,15 +16,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
-      # Install Rust toolchain with rust-src component
-      - uses: actions/setup-rust@v2
-        with:
-          toolchain: # Specify your desired toolchain version here
-          components: rust-src
-
+      - name: Install Rustup
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+          echo "export PATH=$HOME/.rustup/bin:$PATH" >> $HOME/.bashrc
+          source $HOME/.bashrc
+      - name: Install nightly toolchain
+        run: |
+          rustup install nightly-x86_64-unknown-linux-gnu --component rust-src
       - name: Build
-        run: cargo build --verbose
-
-      - name: Run tests
-        run: cargo test --verbose
+        run: cargo build --release
+      - name: Run tests (optional)
+        run: cargo test
