@@ -14,7 +14,7 @@ dependencies = [
 
 [[package]]
 name = "bootloader"
-version = "0.9.24"
+version = "0.9.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c6f4dd3d0a9b440470ea52afcb5f9f09eeefbe36d1d0c29bae397f493d9fddb1"
 
@@ -35,6 +35,6 @@ checksum = "6e63cff320ae2c57904679ba7cb63280a3dc4613885beafb148ee7bf9aa9042d"
 
 [[package]]
 name = "volatile"
-version = "0.2.6"
+version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6af0edf5b4faacc31fc51159244d78d65ec580f021afcef7bd53c04aeabc7f29"
