@@ -2,12 +2,13 @@ name: Rust
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - '*'
+      - '!staging.tmp'
+    tags:
+      - '*'
   pull_request:
-    branches: [ "main" ]
-
-env:
-  CARGO_TERM_COLOR: always
+  workflow_dispatch:
 
 jobs:
   check:
