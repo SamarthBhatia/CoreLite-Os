@@ -1,13 +1,43 @@
 #![no_std] //We need a freestanding binary and by default Rust crates link the std libarary thus we use no_std
 #![no_main]
+#![feature(custom_test_frameworks)]
+#![test_runner(crate::test_runner)]
+#![reexport_test_harness_main = "test_main"]
+
 use core::panic::PanicInfo;
 
-
 mod vga_buffer;
-#[panic_handler]
+mod serial;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u32)]
+pub enum QemuExitCode {
+    Success = 0x10,
+    Failed = 0x11,
+}
+
+pub fn exit_qemu(exit_code: QemuExitCode) {
+    use x86_64::instructions::port::Port;
+
+    unsafe {
+        let mut port = Port::new(0xf4);
+        port.write(exit_code as u32);
+    }
+}
+
+#[cfg(not(test))]
+#[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     println!("{}", _info);
+    loop {}
+}
+
+#[cfg(test)]
+#[panic_handler]
+fn panic(_info: &PanicInfo) -> ! {
+    serial_println!("[failed]\n");
+    serial_println!("Error: {}\n", _info);
+    exit_qemu(QemuExitCode::Failed);
     loop {}
 }
 
@@ -32,6 +62,28 @@ pub extern "C" fn _start() -> ! {
     // vga_buffer::SCREENWRITER.lock().write_str("Hello again").unwrap();
     // write!(vga_buffer::SCREENWRITER.lock(), ", some numbers: {} {}", 42, 1.337).unwrap();
     println!("Hello ,Guys{}", "!");
-    panic!("Some garbage we don't understand :)");
+    //panic!("Some garbage we don't understand :)");
+    
+    #[cfg(test)]
+    test_main();
     loop {}
 }
+
+#[cfg(test)]
+pub fn test_runner(tests: &[&dyn Fn()]) {
+
+    serial_println!("Running {} tests", tests.len());
+    for test in tests {
+        test();
+    }
+
+    exit_qemu(QemuExitCode::Success);
+}
+
+#[test_case]
+fn trivial_assertion() {
+    serial_println!("trivial assertion... ");
+    assert_eq!(2, 3);
+    serial_println!("[ok]");
+}
+
