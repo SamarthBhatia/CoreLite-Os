@@ -85,7 +85,18 @@ pub extern "C" fn _start() -> ! {
     //panic!("Some garbage we don't understand :)");
     
     bareMetal_os::init();
-    x86_64::instructions::interrupts::int3();
+    // x86_64::instructions::interrupts::int3();
+    
+    // unsafe {
+    //     *(0xdeadbeef as *mut u8) = 42; //This was to demonstrate double fault
+    // }
+
+
+    // fn stack_overflow() {
+    //     stack_overflow();
+    // }
+    // //Here we trigger the stack overflow
+    // stack_overflow();
 
     #[cfg(test)]
     test_main();
