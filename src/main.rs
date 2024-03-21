@@ -48,7 +48,8 @@ pub trait Testable {
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     println!("{}", _info);
-    loop {}
+    // loop {}
+    bareMetal_os::hlt_loop();
 }
 
 #[cfg(test)]
@@ -103,8 +104,7 @@ pub extern "C" fn _start() -> ! {
     
     println!("It did not crash!");
     loop {
-        use bareMetal_os::print;
-        print!("-");
+        bareMetal_os::hlt_loop();
     }
 }
 
