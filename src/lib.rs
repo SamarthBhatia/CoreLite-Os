@@ -10,9 +10,11 @@ pub mod vga_buffer;
 pub mod serial;
 pub mod interrupts;
 pub mod gdt;
+pub mod memory;
 
-
+use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
+
 
 pub trait Testable {
     fn run (&self) -> ();
@@ -47,14 +49,25 @@ pub fn test_panic_handler(_info: &PanicInfo) -> ! {
     hlt_loop();
 }
 
+// #[cfg(test)]
+// #[no_mangle]
+// pub extern "C" fn _start() -> ! {
+//     init();
+//     // #[cfg(test)]
+//     test_main();
+//     hlt_loop();
+// }
+
 #[cfg(test)]
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
+entry_point!(test_kernel_module);
+
+#[cfg(test)]
+fn test_kernel_module(_boot_info: &'static BootInfo) -> ! {
     init();
-    // #[cfg(test)]
     test_main();
     hlt_loop();
 }
+
 
 pub fn init() {
     gdt::init();
@@ -92,3 +105,6 @@ pub fn hlt_loop() -> ! {
         x86_64::instructions::hlt();
     }
 }
+
+#[cfg(test)]
+use bootloader::{BootInfo, entry_point};
