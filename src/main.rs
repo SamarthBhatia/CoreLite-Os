@@ -98,14 +98,15 @@ pub extern "C" fn _start() -> ! {
     // }
     // //Here we trigger the stack overflow
     // stack_overflow();
+    // 
+    let ptr = 0xdeadbeaf as *mut u8;
+    unsafe { *ptr = 42; }
 
     #[cfg(test)]
     test_main();
     
     println!("It did not crash!");
-    loop {
-        bareMetal_os::hlt_loop();
-    }
+    bareMetal_os::hlt_loop();
 }
 
 // #[cfg(test)]
