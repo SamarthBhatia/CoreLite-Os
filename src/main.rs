@@ -7,7 +7,7 @@
 use core::panic::PanicInfo;
 use bareMetal_os::println;
 use bootloader::{BootInfo, entry_point};
-
+use bareMetal_os::memory::BootInfoFrameAllocator;
 use bareMetal_os::memory::{translate_addr};
 use x86_64::VirtAddr;
 use x86_64::structures::paging::PageTable;
@@ -92,13 +92,23 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     
     bareMetal_os::init();
 
-    use bareMetal_os::memory;
+    use bareMetal_os::{memory};
     use x86_64::{
-        structures::paging::Translate, VirtAddr};
+        structures::paging::{Page, Translate}, VirtAddr};
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
-   
+    let mut mapper = unsafe { memory::init(phys_mem_offset) };
+    
+    let mut frame_allocator = unsafe {
+        BootInfoFrameAllocator::init(&boot_info.memory_map)
+    };
 
-    let mapper = unsafe { memory::init(phys_mem_offset) };
+    let page = Page::containing_address(VirtAddr::new(0xdeadbeaf000));
+    memory::create_example_mapping(page, &mut mapper, &mut frame_allocator);
+    let page_ptr: *mut u64 = page.start_address().as_mut_ptr();
+    unsafe {
+        page_ptr.offset(400).write_volatile(0x_f021_f077_f065_f04e)
+    };
+
     // let l4_table = unsafe { active_level_4_table(phys_mem_offset) };
 
     // for (item, entry) in l4_table.iter().enumerate() {
@@ -118,21 +128,23 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     //     }
     // }
     
-    let addresses = [
-    // the identity-mapped vga buffer page
-        0xb8000,
-        // some code page
-        0x201008,
-        // some stack page
-        0x0100_0020_1a10,
-        // virtual address mapped to physical address 0
-        boot_info.physical_memory_offset,];
+    // let addresses = [
+    // // the identity-mapped vga buffer page
+    //     0xb8000,
+    //     // some code page
+    //     0x201008,
+    //     // some stack page
+    //     0x0100_0020_1a10,
+    //     // virtual address mapped to physical address 0
+    //     boot_info.physical_memory_offset,];
 
-    for &addr in &addresses {
-        let virt = VirtAddr::new(addr);
-        let phys = mapper.translate_addr(virt);
-        println!("{:?} -> {:?}", virt, phys);
-    }
+    // for &addr in &addresses {
+    //     let virt = VirtAddr::new(addr);
+    //     let phys = mapper.translate_addr(virt);
+    //     println!("{:?} -> {:?}", virt, phys);
+    // }
+    
+
     // x86_64::instructions::interrupts::int3();
     
     // unsafe {
