@@ -8,7 +8,7 @@ use core::panic::PanicInfo;
 use bareMetal_os::println;
 use bootloader::{BootInfo, entry_point};
 
-use bareMetal_os::memory::{translate_addr, active_level_4_table};
+use bareMetal_os::memory::{translate_addr};
 use x86_64::VirtAddr;
 use x86_64::structures::paging::PageTable;
 
@@ -92,7 +92,13 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     
     bareMetal_os::init();
 
+    use bareMetal_os::memory;
+    use x86_64::{
+        structures::paging::Translate, VirtAddr};
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
+   
+
+    let mapper = unsafe { memory::init(phys_mem_offset) };
     // let l4_table = unsafe { active_level_4_table(phys_mem_offset) };
 
     // for (item, entry) in l4_table.iter().enumerate() {
@@ -124,7 +130,7 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
 
     for &addr in &addresses {
         let virt = VirtAddr::new(addr);
-        let phys = unsafe { translate_addr(virt, phys_mem_offset) };
+        let phys = mapper.translate_addr(virt);
         println!("{:?} -> {:?}", virt, phys);
     }
     // x86_64::instructions::interrupts::int3();
@@ -149,9 +155,9 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     // unsafe { *ptr = 42; }
     // println!("write worked");
 
-    use x86_64::registers::control::Cr3;
-    let (level_4_page_table, _) = Cr3::read();
-    println!("Level 4 page table at: {:?}", level_4_page_table.start_address());
+    // use x86_64::registers::control::Cr3;
+    // let (level_4_page_table, _) = Cr3::read();
+    // println!("Level 4 page table at: {:?}", level_4_page_table.start_address());
 
     #[cfg(test)]
     test_main();
