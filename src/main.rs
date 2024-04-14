@@ -15,7 +15,7 @@ use bareMetal_os::allocator;
 use bareMetal_os::memory::{self};
 
 extern crate alloc;
-use alloc::boxed::Box;
+use alloc::{boxed::Box, vec, vec::Vec, rc::Rc};
 
 // mod vga_buffer;
 // mod serial;
@@ -181,11 +181,34 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     
     allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap initialization failed");
     
-    let x = Box::new(41);
+    let heap_value = Box::new(41);
+    println!("heap_value at {:p}", heap_value);
+
+    let mut vec = Vec::new();
+    let mut ptr = vec.as_slice().as_ptr();
+    println!("vec is at {ptr:p}");
+
+    for i in 0..500 {
+        vec.push(i);
+        let new_ptr = vec.as_ptr();
+        if ptr == new_ptr {
+            ptr = new_ptr;
+            println!(" vec moved to {ptr:p}");
+        }
+    }
+
+    println!("vec at {:p}", vec.as_slice());
+
+    let reference_counted = Rc::new(vec![1, 2, 3]);
+    let cloned_reference = reference_counted.clone();
+    println!("current reference count is {}", Rc::strong_count(&cloned_reference));
+    core::mem::drop(reference_counted);
+
+    println!("reference count is {} now", Rc::strong_count(&cloned_reference));
 
     #[cfg(test)]
     test_main();
-    
+
     println!("It did not crash!");
     bareMetal_os::hlt_loop();
 }
