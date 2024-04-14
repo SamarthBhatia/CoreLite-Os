@@ -11,6 +11,11 @@ use bareMetal_os::memory::BootInfoFrameAllocator;
 use bareMetal_os::memory::{translate_addr};
 use x86_64::VirtAddr;
 use x86_64::structures::paging::PageTable;
+use bareMetal_os::allocator;
+use bareMetal_os::memory::{self};
+
+extern crate alloc;
+use alloc::boxed::Box;
 
 // mod vga_buffer;
 // mod serial;
@@ -169,7 +174,14 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
 
     // use x86_64::registers::control::Cr3;
     // let (level_4_page_table, _) = Cr3::read();
-    // println!("Level 4 page table at: {:?}", level_4_page_table.start_address());
+    // println!("Level 4 page table at: {:
+    // ?}", level_4_page_table.start_address());
+
+    
+    
+    allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap initialization failed");
+    
+    let x = Box::new(41);
 
     #[cfg(test)]
     test_main();

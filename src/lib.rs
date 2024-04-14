@@ -5,14 +5,16 @@
 #![reexport_test_harness_main = "test_main"]
 #![feature(abi_x86_interrupt)]
 
+extern crate alloc;
 
 pub mod vga_buffer;
 pub mod serial;
 pub mod interrupts;
 pub mod gdt;
 pub mod memory;
+pub mod allocator;
 
-use bootloader::{entry_point, BootInfo};
+use bootloader::{BootInfo, entry_point};
 use core::panic::PanicInfo;
 
 
@@ -105,6 +107,3 @@ pub fn hlt_loop() -> ! {
         x86_64::instructions::hlt();
     }
 }
-
-#[cfg(test)]
-use bootloader::{BootInfo, entry_point};
