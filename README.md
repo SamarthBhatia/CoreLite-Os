@@ -16,11 +16,11 @@ Our journey dives deep into the core concepts of OS development, including:
 
 We're committed to a clear and achievable development plan:
 
-### Phase 1: Kernel Foundation (Completed)
+### Phase 1: Kernel Foundation :white_check_mark:
 
   - Minimal Rust kernel established to run on bare metal.
   - VGA buffer implemented for text output.
-### Phase 2: Testing and Debugging (Current)
+### Phase 2: Testing and Debugging :white_check_mark:
 
 - Comprehensive unit and integration testing to ensure robustness.
 - Debugging tools and strategies for efficient troubleshooting.
