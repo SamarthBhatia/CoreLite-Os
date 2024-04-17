@@ -1,8 +1,10 @@
 pub mod bump;
+pub mod linked_list;
 
 use alloc::alloc::{GlobalAlloc, Layout};
 use core::ptr::null_mut;
 use linked_list_allocator::LockedHeap;
+use linked_list::LinkedListAllocator;
 
 use bump::BumpAllocator;
 // Wrapper around spin::Mutex to permit trait implementations.
@@ -41,7 +43,9 @@ unsafe impl GlobalAlloc for dummy {
 
 #[global_allocator]
 // static ALLOCATOR: LockedHeap = LockedHeap::empty();
-static ALLOCATOR: Locked<BumpAllocator> =  Locked::new(BumpAllocator::new());
+// static ALLOCATOR: Locked<BumpAllocator> =  Locked::new(BumpAllocator::new());
+static ALLOCATOR: Locked<LinkedListAllocator> =  Locked::new(LinkedListAllocator::new());
+
 
 pub const HEAP_START: usize = 0x_4444_4444_0000;
 pub const HEAP_SIZE: usize = 100 * 1024;
