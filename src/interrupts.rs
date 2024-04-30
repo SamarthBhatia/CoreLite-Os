@@ -118,7 +118,7 @@ extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStac
     //     0x06 => Some('5'),
     //     0x07 => Some('6'),
     //     0x08 => Some('7'),
-    //     0x09 => Some('8'),
+    //     0x09 => Some('8'), 
     //     0x0a => Some('9'),
     //     0x0b => Some('0'),
     //     _ => None,

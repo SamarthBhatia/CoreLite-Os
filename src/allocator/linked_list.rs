@@ -7,7 +7,7 @@ struct ListNode {
 	next: Option<&'static mut ListNode>,
 }
 
-impl ListNode {
+impl ListNode { 
 	const fn new(size: usize) -> Self {
 		ListNode { size, next: None }
 	}
@@ -86,6 +86,7 @@ impl LinkedListAllocator {
         let size = layout.size().max(mem::size_of::<ListNode>());
         (size, layout.align())
     }
+
 }
 
 
@@ -114,3 +115,7 @@ unsafe impl GlobalAlloc for Locked<LinkedListAllocator> {
         self.lock().add_free_region(ptr as usize, size)
     }
 }
+
+ 
+
+ 
