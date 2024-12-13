@@ -1,7 +1,7 @@
 # BareMetal-OS: Building a Rust Kernel from Scratch
 
 ## Architecture Overview
-
+![Architecture](./docs/diagram.svg)
 BareMetal-OS is designed with a clear separation of concerns and modular architecture. The system is built from the ground up in Rust, focusing on safety and performance.
 
 ## Core Components
