@@ -4,10 +4,9 @@
 #![reexport_test_harness_main = "test_main"]
 #![test_runner(bareMetal_os::test_runner)]
 
-
 extern crate alloc;
-use core::panic::PanicInfo;
 use bootloader::{entry_point, BootInfo};
+use core::panic::PanicInfo;
 
 use alloc::boxed::Box;
 use alloc::vec::Vec;
@@ -23,11 +22,8 @@ fn main(boot_info: &'static BootInfo) -> ! {
     bareMetal_os::init();
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
     let mut mapper = unsafe { memory::init(phys_mem_offset) };
-    let mut frame_allocator = unsafe {
-        BootInfoFrameAllocator::init(&boot_info.memory_map)
-    };
-    allocator::init_heap(&mut mapper, &mut frame_allocator)
-        .expect("heap initialization failed");
+    let mut frame_allocator = unsafe { BootInfoFrameAllocator::init(&boot_info.memory_map) };
+    allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap initialization failed");
 
     test_main();
     loop {}
@@ -63,7 +59,6 @@ fn large_vec() {
     }
     assert_eq!(vec.iter().sum::<u64>(), (n - 1) * n / 2);
 }
-
 
 #[test_case]
 fn many_long_lived_boxes() {

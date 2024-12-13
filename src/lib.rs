@@ -8,25 +8,22 @@
 
 extern crate alloc;
 
-pub mod vga_buffer;
-pub mod serial;
-pub mod interrupts;
-pub mod gdt;
-pub mod memory;
 pub mod allocator;
+pub mod gdt;
+pub mod interrupts;
+pub mod memory;
+pub mod serial;
+pub mod vga_buffer;
 
-use bootloader::{BootInfo, entry_point};
 use core::panic::PanicInfo;
 
-
 pub trait Testable {
-    fn run (&self) -> ();
+    fn run(&self) -> ();
 }
 
 impl<T> Testable for T
-where 
+where
     T: Fn(),
-
 {
     fn run(&self) {
         serial_print!("{}...\t", core::any::type_name::<T>());
@@ -36,7 +33,6 @@ where
 }
 
 pub fn test_runner(tests: &[&dyn Testable]) {
-
     serial_println!("Running {} tests", tests.len());
     for test in tests {
         test.run();
@@ -52,14 +48,6 @@ pub fn test_panic_handler(_info: &PanicInfo) -> ! {
     hlt_loop();
 }
 
-// #[cfg(test)]
-// #[no_mangle]
-// pub extern "C" fn _start() -> ! {
-//     init();
-//     // #[cfg(test)]
-//     test_main();
-//     hlt_loop();
-// }
 
 #[cfg(test)]
 entry_point!(test_kernel_module);
@@ -71,11 +59,12 @@ fn test_kernel_module(_boot_info: &'static BootInfo) -> ! {
     hlt_loop();
 }
 
-
 pub fn init() {
     gdt::init();
     interrupts::init_idt();
-    unsafe { interrupts::PICS.lock().initialize(); };
+    unsafe {
+        interrupts::PICS.lock().initialize();
+    };
     x86_64::instructions::interrupts::enable();
 }
 
