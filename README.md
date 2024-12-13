@@ -1,35 +1,70 @@
-BareMetal-OS: Building a Rust Kernel from Scratch
-# What is BareMetal-OS?
+# BareMetal-OS: Building a Rust Kernel from Scratch
 
-BareMetal-OS is an ambitious project focused on creating a fully functional bare-metal operating system written in Rust. This project serves as a valuable learning resource for anyone interested in understanding the intricate workings of an operating system and the power of Rust for low-level development.
+## Architecture Overview
 
-# What's the Project About?
+BareMetal-OS is designed with a clear separation of concerns and modular architecture. The system is built from the ground up in Rust, focusing on safety and performance.
 
-Our journey dives deep into the core concepts of OS development, including:
+## Core Components
 
-- Kernel booting and initialization: Laying the foundation for the entire system.
-- Memory management: Implementing paging, allocation, and protection mechanisms.
-- Interrupt handling: Responding to hardware and software events efficiently.
-- Device drivers: Interacting with physical hardware like VGA and keyboard.
-- System calls: Providing user interaction and application support.
-# Development Roadmap
+### 1. Boot Process
+- **Bootloader**: Uses `bootloader` crate to handle initial system boot
+- **GDT (Global Descriptor Table)**: Manages memory segmentation
+- **IDT (Interrupt Descriptor Table)**: Handles interrupt routing
 
-We're committed to a clear and achievable development plan:
+### 2. Memory Management
+- **Physical Memory Manager**: Handles raw memory allocation
+- **Virtual Memory**: Implements paging with the following features:
+  - Page Table Management
+  - Memory Mapping
+  - Heap Allocation
+- **Memory Allocator**: Supports different allocation strategies:
+  - Bump Allocator
+  - Linked List Allocator
+  - Fixed-Size Block Allocator
 
-### Phase 1: Kernel Foundation :white_check_mark:
+### 3. Hardware Abstraction Layer (HAL)
+- **VGA Driver**: Text-mode display handling
+- **Keyboard Driver**: PS/2 keyboard input
+- **UART Driver**: Serial communication
+- **PIC**: Programmable Interrupt Controller management
 
-  - Minimal Rust kernel established to run on bare metal.
-  - VGA buffer implemented for text output.
-### Phase 2: Testing and Debugging :white_check_mark:
+## Current Features
 
-- Comprehensive unit and integration testing to ensure robustness.
-- Debugging tools and strategies for efficient troubleshooting.
-### Phase 3: Advanced Features (Upcoming)
+✅ Implemented:
+- Bare metal bootloader integration
+- Protected mode initialization
+- Basic memory management
+- VGA text buffer output
+- Interrupt handling infrastructure
+- Custom global allocator
+- Hardware exception handling
+- Unit test framework
 
-- Interrupt handling to respond to hardware and software events.
-- Memory management for efficient allocation and protection.
-- Device drivers to interact with physical hardware.
-### Phase 4: User Interface and Application Support (Future)
+🚧 In Progress:
+- Keyboard input handling
+- Advanced memory management
+- Multi-threading support
+- File system basics
 
-- Command-line interface for user interaction.
-- Basic system utilities and applications.
+## Building and Running
+
+### Prerequisites
+```bash
+# Install Rust nightly
+rustup override set nightly
+
+# Install build dependencies
+cargo install bootimage
+```
+
+## Running the OS
+```bash
+# Build the project
+cargo build
+
+# Create bootable image
+cargo bootimage
+
+# Run in QEMU
+cargo run
+```
